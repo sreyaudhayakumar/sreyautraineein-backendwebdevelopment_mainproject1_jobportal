@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ job.title }} - Job Detail</title>
+</head>
+<body>
+    <h1>{{ job.title }}</h1>
+    <p>Company: {{ job.company }}</p>
+    <p>Description: {{ job.description }}</p>
+    <p>Qualifications: {{ job.qualifications }}</p>
+    <p>Responsibilities: {{ job.responsibilities }}</p>
+    <p>Application Deadline: {{ job.application_deadline }}</p>
+    <p>Salary Range: {{ job.salary_range }}</p>
+    <p>Location: {{ job.location }}</p>
+    <p>Employment Type: {{ job.employment_type }}</p>
+    <p>Benefits: {{ job.benefits }}</p>
+    <p>How to Apply: {{ job.how_to_apply }}</p>
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Apply</button>
+    </form>
+</body>
+</html>

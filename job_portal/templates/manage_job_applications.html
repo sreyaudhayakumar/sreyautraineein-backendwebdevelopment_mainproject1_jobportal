@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Job Applications</title>
+</head>
+<body>
+    <h1>Manage Job Applications</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Applicant</th>
+                <th>Job Title</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for application in applications %}
+            <tr>
+                <td>{{ application.applicant }}</td>
+                <td>{{ application.job_listing.title }}</td>
+                <td>{{ application.status }}</td>
+                <td>
+                    <a href="{% url 'delete_job_application' application.id %}">Delete</a>
+                    <a href="{% url 'confirm_accept_application' application.id %}">Accept</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
+

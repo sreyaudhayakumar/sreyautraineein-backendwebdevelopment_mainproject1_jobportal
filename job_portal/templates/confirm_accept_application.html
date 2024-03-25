@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Accept Application</title>
+</head>
+<body>
+    <h1>Confirm Accept Application</h1>
+    <p>Are you sure you want to accept this job application?</p>
+    <p>Applicant: {{ application.applicant.username }}</p>
+    <p>Job Listing: {{ application.job_listing.title }}</p>
+    <form action="{% url 'accept_job_application' application.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Accept</button>
+    </form>
+    <a href="{% url 'manage_job_applications' %}">Cancel</a>
+</body>
+</html>
