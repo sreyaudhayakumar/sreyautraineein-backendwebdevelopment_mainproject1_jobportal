@@ -22,16 +22,40 @@ def admin_base(request):
     return render(request, 'admin_base.html', {'company_profile': company_profile})
 
 
+# def base2(request):
+#     company_profile = CompanyProfile.objects.first() 
+#     application = JobApplication.objects.first() 
+
+#     context = {
+#         'company_profile': company_profile,
+#         'application': application,
+#     }
+
+#     return render(request, 'base2.html', context)
+
+# @login_required
+# def base2(request):
+#     company_profile = CompanyProfile.objects.first()  # Fetch the company profile, adjust this query as needed
+#     return render(request, 'base2.html', {'company_profile': company_profile})
+
+# @login_required
+# def base2(request):
+#     try:
+#         company_profile = CompanyProfile.objects.get(user=request.user)
+#     except CompanyProfile.DoesNotExist:
+#         # Handle the case where the company profile doesn't exist for the current user
+#         company_profile = None
+
+#     return render(request, 'base2.html', {'company_profile': company_profile})
+
+@login_required
 def base2(request):
-    company_profile = CompanyProfile.objects.first() 
-    application = JobApplication.objects.first() 
+    company_profile = None
+    if hasattr(request.user, 'companyprofile'):
+        company_profile = request.user.companyprofile
+    return render(request, 'base2.html', {'company_profile': company_profile})
 
-    context = {
-        'company_profile': company_profile,
-        'application': application,
-    }
 
-    return render(request, 'base2.html', context)
 
 def register(request):
     if request.method == 'POST':
@@ -118,19 +142,19 @@ def job_detail(request, job_id):
     form = JobApplicationForm()
     return render(request, 'job_detail.html', {'job_listing': job_listing, 'form': form})
 
-def apply_job(request, job_id):
-    if request.method == 'POST':
-        form = JobApplicationForm(request.POST, request.FILES)
-        if form.is_valid():
-            job_listing = JobListing.objects.get(id=job_id)
-            application = form.save(commit=False)
-            application.job_listing = job_listing
-            application.applicant = request.user
-            application.save()
-            return redirect('job_list')
-    else:
-        form = JobApplicationForm()
-    return render(request, 'apply_job.html', {'form': form})
+# def apply_job(request, job_id):
+#     if request.method == 'POST':
+#         form = JobApplicationForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             job_listing = JobListing.objects.get(id=job_id)
+#             application = form.save(commit=False)
+#             application.job_listing = job_listing
+#             application.applicant = request.user
+#             application.save()
+#             return redirect('job_list')
+#     else:
+#         form = JobApplicationForm()
+#     return render(request, 'apply_job.html', {'form': form})
 
 @login_required
 def create_job_listing(request):
@@ -144,11 +168,44 @@ def create_job_listing(request):
         form = JobListingForm()
     return render(request, 'create_job_listing.html', {'form': form})
 
+# def create_company_profile(request):
+#     if request.method == 'POST':
+#         form = CompanyProfileForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('base2')
+#     else:
+#         form = CompanyProfileForm()
+#     return render(request, 'create_company_profile.html', {'form': form})
+
+
+# @login_required
+# def create_company_profile(request):
+#     if request.method == 'POST':
+#         form = CompanyProfileForm(request.POST)
+#         if form.is_valid():
+#             # Assign the user to the CompanyProfile instance before saving
+#             company_profile = form.save(commit=False)
+#             company_profile.user = request.user  # Assign the current user
+#             company_profile.save()
+#             return redirect('base2')  # Redirect to a success page
+#     else:
+#         form = CompanyProfileForm()
+#     return render(request, 'create_company_profile.html', {'form': form})
+
 def create_company_profile(request):
+    # Check if the user already has a CompanyProfile
+    if hasattr(request.user, 'companyprofile'):
+        # Redirect to update view or show a message indicating the profile already exists
+        return redirect('update_company_profile', pk=request.user.companyprofile.pk)
+    
     if request.method == 'POST':
         form = CompanyProfileForm(request.POST)
         if form.is_valid():
-            form.save()
+            # Assign the user to the CompanyProfile instance
+            company_profile = form.save(commit=False)
+            company_profile.user = request.user
+            company_profile.save()
             return redirect('base2')
     else:
         form = CompanyProfileForm()
@@ -265,4 +322,44 @@ def search_jobs(request):
     }
 
     return render(request, 'job_search_results.html', context)
+
+
+    
+from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from django.contrib import messages
+from django.conf import settings
+from .forms import JobApplicationForm
+from .models import JobListing
+
+def apply_job(request, job_id):
+    if request.method == 'POST':
+        form = JobApplicationForm(request.POST, request.FILES)
+        if form.is_valid():
+            job_listing = JobListing.objects.get(id=job_id)
+            application = form.save(commit=False)
+            application.job_listing = job_listing
+            application.applicant = request.user
+            application.save()
+
+            subject = f"A new job application has been submitted for the position of {job_listing.title} at your company."
+            message = f"You can review the application details and take further action as needed."
+            sender_email = settings.EMAIL_HOST_USER
+            recipient_email = job_listing.company.email  # Assuming company has an email field
+            try:
+                send_mail(subject, message, sender_email, [recipient_email], fail_silently=False)
+                messages.success(request, 'Application submitted successfully! An email notification has been sent to the recruiter.')
+            except Exception as e:
+                messages.error(request, f'Failed to send email notification: {e}')
+            return redirect('job_list')
+        else:
+            messages.error(request, 'Form submission failed. Please correct the errors.')
+    else:
+        form = JobApplicationForm()
+    return render(request, 'apply_job.html', {'form': form})
+
+
+
+
+
 

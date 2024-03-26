@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.core.mail import send_mail
 
 
 
@@ -56,6 +57,7 @@ class JobSeekerProfile(models.Model):
 
 
 class CompanyProfile(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     description = models.TextField()
     location = models.CharField(max_length=100)
@@ -90,3 +92,10 @@ class JobApplication(models.Model):
         ('rejected', 'Rejected'),
     ]
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+
+    def send_notification_email(self):
+            subject = 'Job Application Received'
+            message = 'Your job application for {} has been received.'.format(self.job_listing.title)
+            from_email = settings.EMAIL_HOST_USER
+            to_email = [self.applicant.email]  # Retrieve email of the applicant
+            send_mail(subject, message, from_email, to_email, fail_silently=False)

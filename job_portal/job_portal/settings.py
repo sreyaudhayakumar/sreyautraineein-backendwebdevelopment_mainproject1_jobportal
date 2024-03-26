@@ -131,3 +131,24 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'jobs.CustomUser'
+
+# settings.py
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = '79b53001ce1fb9'
+EMAIL_HOST_PASSWORD = 'ywwd mvju gnsn lsqe'
+EMAIL_PORT = '587'
+EMAIL_USE_TLS = True 
+
+# Mailtrap SMTP port
+
+
+# def send_notification_email(subject, recipient_list, template, context):
+#     from django.core.mail import send_mail
+#     from django.template.loader import render_to_string
+#     from django.utils.html import strip_tags
+
+#     html_message = render_to_string(template, context)
+#     plain_message = strip_tags(html_message)
+#     send_mail(subject, plain_message, EMAIL_HOST_USER, recipient_list, html_message=html_message)

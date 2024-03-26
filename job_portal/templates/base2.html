@@ -25,8 +25,11 @@
                         <a class="nav-link" href="{% url 'create_company_profile' %}">Create Company Profile</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'update_company_profile' pk=company_profile.pk %}">Update Company Profile</a>
+                         <a class="nav-link" href="{% if company_profile %}{% url 'update_company_profile' pk=company_profile.pk %}{% endif %}">Update Company Profile</a>
                     </li>
+                    {% comment %} <li class="nav-item">
+                        <a class="nav-link" href="{% url 'update_company_profile' pk=company_profile.pk %}">Update Company Profile</a>
+                    </li> {% endcomment %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'create_job_listing' %}">Post Job</a>
                     </li>

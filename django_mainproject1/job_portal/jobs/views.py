@@ -12,7 +12,7 @@ def register(request):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # You may need to customize this logic based on your requirements
+    
             user_type = form.cleaned_data['user_type']
             user.user_type = user_type
             user.save()

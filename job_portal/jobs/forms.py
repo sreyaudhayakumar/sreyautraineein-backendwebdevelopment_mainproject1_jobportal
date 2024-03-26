@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import CustomUser, JobSeekerProfile,JobApplication
-# from .forms import JobApplicationForm
+
 
 
 
@@ -16,10 +16,6 @@ class RegistrationForm(UserCreationForm):
         model = CustomUser
         fields = ['full_name', 'username', 'email', 'password1', 'user_type']
 
-# class LoginForm(AuthenticationForm):
-#     class Meta:
-#         model = CustomUser
-#         fields = ['username', 'password']
 
 class LoginForm(forms.Form):
     username = forms.CharField()
